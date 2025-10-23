@@ -1,13 +1,16 @@
-from sqlmodel import SQLModel
 from datetime import datetime
-from app.global.enums.BaseStatus import BaseStatus
+from sqlmodel import SQLModel
 from typing import Optional
 
-class AbstractBasicView(SQLModel):
+from app.common.enums import BaseStatus
+
+
+class abstract_basic_view(SQLModel):
     id: Optional[int] = None
     version: Optional[int] = None
-    
-class AbstractDetailedView(AbstractBasicView):
+
+
+class abstarct_detailed_view(abstract_basic_view):
     createdOn: Optional[datetime] = None
     updatedOn: Optional[datetime] = None
     status: Optional[BaseStatus] = None

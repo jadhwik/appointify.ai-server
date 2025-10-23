@@ -1,8 +1,10 @@
 from sqlmodel import SQLModel, Field, create_engine, Session, select
-from app.global.models.BaseModel import AbstractTransactionalModel
-from app.global.views.BaseViews import AbstractDetailedView
 
-class User(AbstractTransactionalModel):
+from app.common.models import AbstractTransactionalModel
+from app.common.views import AbstractDetailedView
+
+
+class Users(AbstractTransactionalModel):
     name: str = Field(..., min_length=3, max_length=255)
     email: str = Field(..., format="email")
     phone: str = Field(..., min_length=10, max_length=15)
@@ -10,10 +12,10 @@ class User(AbstractTransactionalModel):
     city: str = Field(..., min_length=3, max_length=255)
     state: str = Field(..., min_length=3, max_length=255)
     zip: str = Field(..., min_length=5, max_length=10)
-    country: str = Field(..., min_length=3, max_length=255)
+    country: str = Field(..., min_length=3, max_length=255) 
     role: str = Field(..., min_length=3, max_length=255)
    
-class UserCreate(User):
+class UserCreate(Users):
     name: str = Field(..., min_length=3, max_length=255)
     email: str = Field(..., format="email")
     phone: str = Field(..., min_length=10, max_length=15)
@@ -26,7 +28,7 @@ class UserCreate(User):
    
     
     
-class UserUpdate(User):
+class UserUpdate(Users):
     name: str = Field(..., min_length=3, max_length=255)
     email: str = Field(..., format="email")
     phone: str = Field(..., min_length=10, max_length=15)

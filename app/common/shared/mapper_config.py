@@ -1,5 +1,7 @@
 from datetime import datetime
-from app.global.enums.BaseStatus import BaseStatus
+
+from app.common.enums import BaseStatus
+
 
 class MapperConfig:
     IGNORE_COMMON_FIELDS = ["id", "version", "createdOn", "updatedOn", "status"]

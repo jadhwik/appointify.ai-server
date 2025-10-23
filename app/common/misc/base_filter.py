@@ -1,13 +1,11 @@
+from typing import Optional, List
 
-from typing import List, Optional
-from pydantic import BaseModel, Field, conint
-from datetime import datetime
-import pytz
-from app.global.enums.BaseStatus import BaseStatus
+from pydantic import BaseModel, conint
 
+from app.common.enums.base_status import base_status
 
 
-class DateFilter(BaseModel):
+class DateFilter():
     field: Optional[str] = None
     from_date: Optional[int] = None
     to_date: Optional[int] = None
@@ -15,7 +13,7 @@ class DateFilter(BaseModel):
 
 
 class BaseFilter(BaseModel):
-    status: Optional[List[BaseStatus]] = None
+    status: Optional[List[base_status]] = None
     # Pagination
     page: conint(ge=0) = 0
     rows: conint(ge=1, le=1000) = 15
@@ -32,12 +30,12 @@ class BaseFilter(BaseModel):
 
     # Custom getter for status default
     @property
-    def get_status(self) -> List[BaseStatus]:
-        return self.status or [BaseStatus.ACTIVE]
+    def get_status(self) -> List[base_status]:
+        return self.status or [base_status.ACTIVE]
 
     # Custom getter for timezone default
     @property
-    def get_timezone(self) -> str:
+    def get_timezone(self, pytz=None) -> str:
         return self.timezone or str(pytz.timezone("UTC"))
 
     # Helper method for sorting direction

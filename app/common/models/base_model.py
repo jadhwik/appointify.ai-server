@@ -1,7 +1,8 @@
 from datetime import datetime
-from app.global.enums.BaseStatus import BaseStatus
 from sqlmodel import SQLModel, Field
 from typing import Optional
+
+from app.common.enums.base_status import BaseStatus
 
 
 class AbstractBaseModel(SQLModel):
