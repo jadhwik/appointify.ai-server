@@ -15,5 +15,13 @@ def get_user_service() -> UserServiceMaster:
 
 
 @router.post("/")
-def create_user(user: UserCreate,session: Session = Depends(get_db()),user_service: UserServiceMaster = Depends(get_user_service)):
-    return user_service.create(session, user)
+def create_user(user: UserCreate,session: Session = Depends(get_db),user_service: UserServiceMaster = Depends(get_user_service)):
+    return user_service.create_user(session, user)
+
+@router.get("/{id}")
+def get_user(id:str,session: Session = Depends(get_db),user_service: UserServiceMaster = Depends(get_user_service)):
+    return user_service.get(session, id)
+
+
+
+

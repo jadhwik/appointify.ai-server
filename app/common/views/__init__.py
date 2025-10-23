@@ -1,8 +1,7 @@
+from app.common.views.base_views import AbstractBasicView, AbstractDetailedView
 
-from app.common.views.BaseViews import AbstractDetailedView, AbstractBasicView
 
 __all__ = [
     "AbstractBasicView","AbstractDetailedView"
 ]
-
 

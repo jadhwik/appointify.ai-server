@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, create_engine, Session, select
 
 from app.common.models import AbstractTransactionalModel
@@ -6,7 +7,7 @@ from app.common.views import AbstractDetailedView
 
 class Users(AbstractTransactionalModel):
     name: str = Field(..., min_length=3, max_length=255)
-    email: str = Field(..., format="email")
+    email: EmailStr = Field(...)
     phone: str = Field(..., min_length=10, max_length=15)
     address: str = Field(..., min_length=10, max_length=255)
     city: str = Field(..., min_length=3, max_length=255)
@@ -15,9 +16,9 @@ class Users(AbstractTransactionalModel):
     country: str = Field(..., min_length=3, max_length=255) 
     role: str = Field(..., min_length=3, max_length=255)
    
-class UserCreate(Users):
+class UserCreate(SQLModel):
     name: str = Field(..., min_length=3, max_length=255)
-    email: str = Field(..., format="email")
+    email: EmailStr = Field(...)
     phone: str = Field(..., min_length=10, max_length=15)
     address: str = Field(..., min_length=10, max_length=255)
     city: str = Field(..., min_length=3, max_length=255)
@@ -28,9 +29,9 @@ class UserCreate(Users):
    
     
     
-class UserUpdate(Users):
+class UserUpdate(SQLModel):
     name: str = Field(..., min_length=3, max_length=255)
-    email: str = Field(..., format="email")
+    email: EmailStr = Field(...)
     phone: str = Field(..., min_length=10, max_length=15)
     address: str = Field(..., min_length=10, max_length=255)
     city: str = Field(..., min_length=3, max_length=255)

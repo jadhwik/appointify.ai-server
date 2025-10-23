@@ -8,6 +8,6 @@ from app.modules.user.models import UserCreate
 class UserServiceMaster:
 
     @abstractmethod
-    def createUser(self,session:Session, user:UserCreate):
+    def create_user(self,session:Session, user:UserCreate):
         pass
 
