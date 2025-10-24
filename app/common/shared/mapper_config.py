@@ -17,10 +17,10 @@ class MapperConfig:
     
     @staticmethod
     def custom_for_view():
-         return {
-           "createdOn": lambda user: user.createdOn,
-            "updatedOn": lambda user: user.updatedOn,
+        return {
+            "created_on": lambda user: user.created_on,  # use snake_case
+            "updated_on": lambda user: user.updated_on,  # use snake_case
             "version": lambda user: user.version,
-             "status": lambda user: user.status,
+            "status": lambda user: user.status,
         }
         

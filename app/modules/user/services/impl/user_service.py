@@ -1,33 +1,59 @@
+from abc import ABC
+from typing import Optional
+
 from sqlmodel import Session
 
-from app.common.enums import UserErrorCode, CommonErrorCode
+from app.common.enums import UserErrorCode, CommonErrorCode, BaseStatus
 from app.common.exceptions import BasicExceptions
 from app.modules.user.dao.user_dao import UserDao
 from app.modules.user.mapper.user_mapper import UserMapper
-from app.modules.user.models import UserCreate,Users
+from app.modules.user.models import UserCreate, Users, UserView, UserUpdate
 from app.modules.user.services.user_service_master import UserServiceMaster
 
 
 class UserService(UserServiceMaster):
 
     def __init__(self):
-        # Use snake_case and remove semicolons
         self.user_dao = UserDao()
-        self.user_mapper = UserMapper()
+        self.mapper = UserMapper()
 
-    def create_user(self, session: Session, user: UserCreate):
-        mapped_user: Users = self.user_mapper.get_entity
+    def create_user(self, session: Session, user: UserCreate) ->UserView:
+        mapped_user= self.mapper.to_entity(user)
+        print(f'mapped user: {mapped_user}')
+
         if mapped_user is None:
-            BasicExceptions.raise_exception(CommonErrorCode.BAD_REQUEST,"Empty Data")
-        self.user_dao.save_user(session, mapped_user)
-        return self.user_mapper.get_view
+            BasicExceptions.raise_exception(
+                CommonErrorCode.BAD_REQUEST,
+                "Failed to map user data"
+            )
 
-    def get_user(self,session:Session,id:int):
-        user:Users|None= self.user_dao.find_by_id(self,session,id)
+        created_user = self.user_dao.save_user(session, mapped_user)
+        return self.mapper.to_response(created_user)
+
+    def get_user(self,session:Session,id:int) -> UserView:
+        user:Users|None= self.user_dao.find_by_id(session,id)
         if user is None:
             BasicExceptions.raise_exception(CommonErrorCode.NOT_FOUND,"User not found")
             return None
-        return self.user_mapper.get_view
+        print(f'user: {user}')
+        return self.mapper.to_response(user)
+
+    def update_user(self, session: Session, id: int, user: UserUpdate) -> UserView:
+        existing_user = self.user_dao.find_by_id(session,id)
+        if existing_user is None:
+            BasicExceptions.raise_exception(CommonErrorCode.NOT_FOUND,"User not found")
+        updated_user = self.mapper.update_entity(existing_user,user)
+        self.user_dao.save_user(session,updated_user)
+        return self.mapper.to_response(updated_user)
 
 
+    def delete_user(self, session: Session, id: int) -> bool:
+        existing_user:Optional[Users] = self.user_dao.find_by_id( session, id)
+        if existing_user is None:
+            BasicExceptions.raise_exception(CommonErrorCode.NOT_FOUND,"User not found")
+        if existing_user.status == BaseStatus.DELETED:
+            BasicExceptions.raise_exception(CommonErrorCode.ALREADY_EXISTS,"User  is already deleted")
+        existing_user.status  = BaseStatus.DELETED
+        self.user_dao.save_user(session,existing_user)
+        return True
 

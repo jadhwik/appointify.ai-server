@@ -5,7 +5,7 @@ from app.common.models import AbstractTransactionalModel
 from app.common.views import AbstractDetailedView
 
 
-class Users(AbstractTransactionalModel):
+class Users(AbstractTransactionalModel,table=True):
     name: str = Field(..., min_length=3, max_length=255)
     email: EmailStr = Field(...)
     phone: str = Field(..., min_length=10, max_length=15)

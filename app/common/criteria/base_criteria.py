@@ -4,7 +4,7 @@ from typing import Any, Type
 from sqlmodel import SQLModel
 
 
-class BaseFilter:
+class BaseCriteria:
     def __init__(self, model: Type[SQLModel]):
         self.model = model
         self.filters = []
