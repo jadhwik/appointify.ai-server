@@ -2,7 +2,8 @@ from typing import Optional, List
 
 from pydantic import BaseModel, conint
 
-from app.common.enums.base_status import base_status
+from app.common.enums import BaseStatus
+
 
 
 class DateFilter():
@@ -13,9 +14,9 @@ class DateFilter():
 
 
 class BaseFilter(BaseModel):
-    status: Optional[List[base_status]] = None
+    status: Optional[List[BaseStatus]] = None
     # Pagination
-    page: conint(ge=0) = 0
+    page: conint(ge=1) = 1
     rows: conint(ge=1, le=1000) = 15
 
     # Search query
@@ -30,8 +31,8 @@ class BaseFilter(BaseModel):
 
     # Custom getter for status default
     @property
-    def get_status(self) -> List[base_status]:
-        return self.status or [base_status.ACTIVE]
+    def get_status(self) -> List[BaseStatus]:
+        return self.status or [BaseStatus.ACTIVE]
 
     # Custom getter for timezone default
     @property

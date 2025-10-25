@@ -4,8 +4,18 @@ from enum import Enum
 from fastapi import status
 
 
+class BaseErrorCode:
+    def __init__(self, http_status, code, message):
+        self.http_status = http_status
+        self.code = code
+        self.message = message
 
-class CommonErrorCode( Enum):
+    def message_text(self, messages_map):
+        return messages_map.get(self, "Unknown error occurred")
+
+
+
+class CommonErrorCode(BaseErrorCode, Enum):
     NOT_FOUND = (status.HTTP_404_NOT_FOUND, 404, "NOT_FOUND")
     ALREADY_EXISTS = (status.HTTP_409_CONFLICT, 409, "ALREADY_EXISTS")
     VALIDATION_ERROR = (status.HTTP_422_UNPROCESSABLE_ENTITY, 422, "VALIDATION_ERROR")
@@ -30,7 +40,7 @@ class AuthErrorCode( Enum):
     PASSWORD_MISMATCH = "AUTH_PASSWORD_MISMATCH"
 
 
-class UserErrorCode( Enum):
+class UserErrorCode(BaseErrorCode, Enum):
     USER_NOT_FOUND = (status.HTTP_404_NOT_FOUND, 404, "USER_NOT_FOUND")
     USER_ALREADY_EXISTS = (status.HTTP_409_CONFLICT, 409, "USER_ALREADY_EXISTS")
     USER_EMAIL_EXISTS = (status.HTTP_409_CONFLICT, 409, "USER_EMAIL_EXISTS")
@@ -75,6 +85,8 @@ class NotificationErrorCode( Enum):
     NOTIFICATION_SEND_FAILED = "NOTIFICATION_SEND_FAILED"
     NOTIFICATION_INVALID_TEMPLATE = "NOTIFICATION_INVALID_TEMPLATE"
     NOTIFICATION_INVALID_RECIPIENT = "NOTIFICATION_INVALID_RECIPIENT"
+
+
 
 
 # Error messages mapping

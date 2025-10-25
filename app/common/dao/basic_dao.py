@@ -2,10 +2,12 @@ from typing import TypeVar, Generic, Type, Optional, List, Dict, Any, Tuple
 from sqlmodel import Session, select, SQLModel, col
 from sqlalchemy import func, asc, desc
 
+from app.common.criteria import BaseCriteria
+
 T = TypeVar("T", bound=SQLModel)
 
 
-class BasicDao(Generic[T]):
+class BasicDao(BaseCriteria, Generic[T]):
     """
     Base Data Access Object implementing common CRUD operations.
     Similar to Spring Data JPA Repository pattern.
@@ -112,127 +114,7 @@ class BasicDao(Generic[T]):
         self.soft_delete(session, obj)
         return True
 
-    # QUERY WITH FILTERS AND PAGINATION
-    def find_all_paginated(
-            self,
-            session: Session,
-            page: int = 0,
-            size: int = 10,
-            sort_by: Optional[str] = None,
-            ascending: bool = True,
-            filters: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Find entities with filtering, sorting, and pagination.
 
-        Args:
-            session: Database session
-            page: Page number (0-indexed)
-            size: Number of items per page
-            sort_by: Field name to sort by
-            ascending: Sort direction
-            filters: Dictionary of field:value pairs to filter by
-
-        Returns:
-            Dictionary with content, total, page, size, and totalPages
-        """
-        query = select(self.model)
-
-        # Apply filters
-        if filters:
-            for field, value in filters.items():
-                if hasattr(self.model, field):
-                    column = getattr(self.model, field)
-                    if isinstance(value, list):
-                        query = query.where(column.in_(value))
-                    else:
-                        query = query.where(column == value)
-
-        # Count total before pagination
-        count_query = select(func.count()).select_from(query.subquery())
-        total = session.exec(count_query).one()
-
-        # Apply sorting
-        if sort_by and hasattr(self.model, sort_by):
-            order_column = getattr(self.model, sort_by)
-            order_func = asc if ascending else desc
-            query = query.order_by(order_func(order_column))
-
-        # Apply pagination
-        offset = page * size
-        query = query.offset(offset).limit(size)
-
-        # Execute query
-        results = session.exec(query).all()
-
-        total_pages = (total + size - 1) // size if size > 0 else 0
-
-        return {
-            "content": results,
-            "total": total,
-            "page": page,
-            "size": size,
-            "totalPages": total_pages
-        }
-
-    def search_by_field(
-            self,
-            session: Session,
-            field_name: str,
-            search_term: str,
-            page: int = 0,
-            size: int = 10,
-            case_sensitive: bool = False
-    ) -> Dict[str, Any]:
-        """
-        Search entities by a specific field with partial matching.
-
-        Args:
-            session: Database session
-            field_name: Name of the field to search in
-            search_term: Term to search for
-            page: Page number (0-indexed)
-            size: Number of items per page
-            case_sensitive: Whether search should be case sensitive
-
-        Returns:
-            Paginated search results
-        """
-        if not hasattr(self.model, field_name):
-            return {
-                "content": [],
-                "total": 0,
-                "page": page,
-                "size": size,
-                "totalPages": 0
-            }
-
-        query = select(self.model)
-        field = getattr(self.model, field_name)
-
-        if case_sensitive:
-            query = query.where(field.contains(search_term))
-        else:
-            query = query.where(func.lower(field).contains(search_term.lower()))
-
-        # Count total
-        count_query = select(func.count()).select_from(query.subquery())
-        total = session.exec(count_query).one()
-
-        # Pagination
-        offset = page * size
-        query = query.offset(offset).limit(size)
-        results = session.exec(query).all()
-
-        total_pages = (total + size - 1) // size if size > 0 else 0
-
-        return {
-            "content": results,
-            "total": total,
-            "page": page,
-            "size": size,
-            "totalPages": total_pages
-        }
 
     # CUSTOM QUERY METHODS
     def find_one_by(self, session: Session, **filters) -> Optional[T]:

@@ -1,3 +1,6 @@
+from app.common.criteria.base_criteria import BaseCriteria
+
 __all__=[
-"base_criteria",
+"BaseCriteria",
 ]
+

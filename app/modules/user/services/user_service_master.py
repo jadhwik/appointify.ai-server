@@ -2,6 +2,8 @@ from abc import abstractmethod, ABC
 
 from sqlmodel import Session
 
+from app.common.models import PaginatedResponse
+from app.modules.user.misc import UserFilter
 from app.modules.user.models import UserCreate, UserView, UserUpdate
 
 
@@ -15,6 +17,10 @@ class UserServiceMaster(ABC):
     @abstractmethod
     def get_user(self, session: Session, id: int) ->UserView:
         """Get user by ID"""
+        pass
+
+    @abstractmethod
+    def search_user(self, session: Session, filters: UserFilter) -> PaginatedResponse[UserView]:
         pass
 
     @abstractmethod
